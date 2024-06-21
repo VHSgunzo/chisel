@@ -1,7 +1,6 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
-BUILD=$(shell git rev-parse HEAD)
 DIRBASE=./build
-DIR=${DIRBASE}/${VERSION}/${BUILD}/bin
+DIR=${DIRBASE}/${VERSION}/bin
 
 LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid= -X github.com/jpillora/chisel/share.BuildVersion=${VERSION}"
 
