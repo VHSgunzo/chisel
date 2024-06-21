@@ -3,15 +3,12 @@ package chclient
 import (
 	"context"
 	"crypto/md5"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -40,18 +37,8 @@ type Config struct {
 	Proxy            string
 	Remotes          []string
 	Headers          http.Header
-	TLS              TLSConfig
 	DialContext      func(ctx context.Context, network, addr string) (net.Conn, error)
 	Verbose          bool
-}
-
-// TLSConfig for a Client
-type TLSConfig struct {
-	SkipVerify bool
-	CA         string
-	Cert       string
-	Key        string
-	ServerName string
 }
 
 // Client represents a client instance
@@ -60,7 +47,6 @@ type Client struct {
 	config    *Config
 	computed  settings.Config
 	sshConfig *ssh.ClientConfig
-	tlsConfig *tls.Config
 	proxyURL  *url.URL
 	server    string
 	connCount cnet.ConnCount
@@ -72,7 +58,8 @@ type Client struct {
 // NewClient creates a new client instance
 func NewClient(c *Config) (*Client, error) {
 	//apply default scheme
-	if !strings.HasPrefix(c.Server, "http") {
+	if !strings.HasPrefix(c.Server, "http") &&
+		!strings.HasPrefix(c.Server, "ws") {
 		c.Server = "http://" + c.Server
 	}
 	if c.MaxRetryInterval < time.Second {
@@ -83,14 +70,12 @@ func NewClient(c *Config) (*Client, error) {
 		return nil, err
 	}
 	//swap to websockets scheme
+	// if !strings.HasPrefix(c.Server, "ws") {
 	u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
+	// }
 	//apply default port
 	if !regexp.MustCompile(`:\d+$`).MatchString(u.Host) {
-		if u.Scheme == "wss" {
-			u.Host = u.Host + ":443"
-		} else {
-			u.Host = u.Host + ":80"
-		}
+		u.Host = u.Host + ":2871"
 	}
 	hasReverse := false
 	hasSocks := false
@@ -101,44 +86,10 @@ func NewClient(c *Config) (*Client, error) {
 		computed: settings.Config{
 			Version: chshare.BuildVersion,
 		},
-		server:    u.String(),
-		tlsConfig: nil,
+		server: u.String(),
 	}
 	//set default log level
 	client.Logger.Info = true
-	//configure tls
-	if u.Scheme == "wss" {
-		tc := &tls.Config{}
-		if c.TLS.ServerName != "" {
-			tc.ServerName = c.TLS.ServerName
-		}
-		//certificate verification config
-		if c.TLS.SkipVerify {
-			client.Infof("TLS verification disabled")
-			tc.InsecureSkipVerify = true
-		} else if c.TLS.CA != "" {
-			rootCAs := x509.NewCertPool()
-			if b, err := os.ReadFile(c.TLS.CA); err != nil {
-				return nil, fmt.Errorf("Failed to load file: %s", c.TLS.CA)
-			} else if ok := rootCAs.AppendCertsFromPEM(b); !ok {
-				return nil, fmt.Errorf("Failed to decode PEM: %s", c.TLS.CA)
-			} else {
-				client.Infof("TLS verification using CA %s", c.TLS.CA)
-				tc.RootCAs = rootCAs
-			}
-		}
-		//provide client cert and key pair for mtls
-		if c.TLS.Cert != "" && c.TLS.Key != "" {
-			c, err := tls.LoadX509KeyPair(c.TLS.Cert, c.TLS.Key)
-			if err != nil {
-				return nil, fmt.Errorf("Error loading client cert and key pair: %v", err)
-			}
-			tc.Certificates = []tls.Certificate{c}
-		} else if c.TLS.Cert != "" || c.TLS.Key != "" {
-			return nil, fmt.Errorf("Please specify client BOTH cert and key")
-		}
-		client.tlsConfig = tc
-	}
 	//validate remotes
 	for _, s := range c.Remotes {
 		r, err := settings.DecodeRemote(s)

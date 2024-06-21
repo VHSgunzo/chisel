@@ -79,7 +79,6 @@ func (c *Client) connectionOnce(ctx context.Context) (connected bool, err error)
 	d := websocket.Dialer{
 		HandshakeTimeout: settings.EnvDuration("WS_TIMEOUT", 45*time.Second),
 		Subprotocols:     []string{chshare.ProtocolVersion},
-		TLSClientConfig:  c.tlsConfig,
 		ReadBufferSize:   settings.EnvInt("WS_BUFF_SIZE", 0),
 		WriteBufferSize:  settings.EnvInt("WS_BUFF_SIZE", 0),
 		NetDialContext:   c.config.DialContext,

@@ -19,6 +19,7 @@ import (
 	"github.com/jpillora/chisel/share/settings"
 	"github.com/jpillora/requestlog"
 	"golang.org/x/crypto/ssh"
+	// websocket "github.com/lxzan/gws"
 )
 
 // Config is the configuration for the chisel service
@@ -31,7 +32,6 @@ type Config struct {
 	Socks5    bool
 	Reverse   bool
 	KeepAlive time.Duration
-	TLS       TLSConfig
 }
 
 // Server respresent a chisel service

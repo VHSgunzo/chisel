@@ -102,7 +102,7 @@ var serverHelp = `
     (defaults the environment variable HOST and falls back to 0.0.0.0).
 
     --port, -p, Defines the HTTP listening port (defaults to the environment
-    variable PORT and fallsback to port 8080).
+    variable PORT and fallsback to port 2871).
 
     --key, (deprecated use --keygen and --keyfile instead)
     An optional string to seed the generation of a ECDSA public
@@ -153,27 +153,6 @@ var serverHelp = `
 
     --reverse, Allow clients to specify reverse port forwarding remotes
     in addition to normal remotes.
-
-    --tls-key, Enables TLS and provides optional path to a PEM-encoded
-    TLS private key. When this flag is set, you must also set --tls-cert,
-    and you cannot set --tls-domain.
-
-    --tls-cert, Enables TLS and provides optional path to a PEM-encoded
-    TLS certificate. When this flag is set, you must also set --tls-key,
-    and you cannot set --tls-domain.
-
-    --tls-domain, Enables TLS and automatically acquires a TLS key and
-    certificate using LetsEncrypt. Setting --tls-domain requires port 443.
-    You may specify multiple --tls-domain flags to serve multiple domains.
-    The resulting files are cached in the "$HOME/.cache/chisel" directory.
-    You can modify this path by setting the CHISEL_LE_CACHE variable,
-    or disable caching by setting this variable to "-". You can optionally
-    provide a certificate notification email by setting CHISEL_LE_EMAIL.
-
-    --tls-ca, a path to a PEM encoded CA certificate bundle or a directory
-    holding multiple PEM encode CA certificate bundle files, which is used to 
-    validate client connections. The provided CA certificates will be used 
-    instead of the system roots. This is commonly used to implement mutual-TLS. 
 ` + commonHelp
 
 func server(args []string) {
@@ -190,10 +169,6 @@ func server(args []string) {
 	flags.StringVar(&config.Proxy, "backend", "", "")
 	flags.BoolVar(&config.Socks5, "socks5", false, "")
 	flags.BoolVar(&config.Reverse, "reverse", false, "")
-	flags.StringVar(&config.TLS.Key, "tls-key", "", "")
-	flags.StringVar(&config.TLS.Cert, "tls-cert", "", "")
-	flags.Var(multiFlag{&config.TLS.Domains}, "tls-domain", "")
-	flags.StringVar(&config.TLS.CA, "tls-ca", "", "")
 
 	host := flags.String("host", "", "")
 	p := flags.String("p", "", "")
@@ -233,7 +208,7 @@ func server(args []string) {
 		*port = os.Getenv("PORT")
 	}
 	if *port == "" {
-		*port = "8080"
+		*port = "2871"
 	}
 	if config.KeyFile == "" {
 		config.KeyFile = settings.Env("KEY_FILE")
@@ -393,28 +368,6 @@ var clientHelp = `
 
     --hostname, Optionally set the 'Host' header (defaults to the host
     found in the server url).
-
-    --sni, Override the ServerName when using TLS (defaults to the 
-    hostname).
-
-    --tls-ca, An optional root certificate bundle used to verify the
-    chisel server. Only valid when connecting to the server with
-    "https" or "wss". By default, the operating system CAs will be used.
-
-    --tls-skip-verify, Skip server TLS certificate verification of
-    chain and host name (if TLS is used for transport connections to
-    server). If set, client accepts any TLS certificate presented by
-    the server and any host name in that certificate. This only affects
-    transport https (wss) connection. Chisel server's public key
-    may be still verified (see --fingerprint) after inner connection
-    is established.
-
-    --tls-key, a path to a PEM encoded private key used for client 
-    authentication (mutual-TLS).
-
-    --tls-cert, a path to a PEM encoded certificate matching the provided 
-    private key. The certificate must have client authentication 
-    enabled (mutual-TLS).
 ` + commonHelp
 
 func client(args []string) {
@@ -426,13 +379,8 @@ func client(args []string) {
 	flags.IntVar(&config.MaxRetryCount, "max-retry-count", -1, "")
 	flags.DurationVar(&config.MaxRetryInterval, "max-retry-interval", 0, "")
 	flags.StringVar(&config.Proxy, "proxy", "", "")
-	flags.StringVar(&config.TLS.CA, "tls-ca", "", "")
-	flags.BoolVar(&config.TLS.SkipVerify, "tls-skip-verify", false, "")
-	flags.StringVar(&config.TLS.Cert, "tls-cert", "", "")
-	flags.StringVar(&config.TLS.Key, "tls-key", "", "")
 	flags.Var(&headerFlags{config.Headers}, "header", "")
 	hostname := flags.String("hostname", "", "")
-	sni := flags.String("sni", "", "")
 	pid := flags.Bool("pid", false, "")
 	verbose := flags.Bool("v", false, "")
 	flags.Usage = func() {
@@ -454,13 +402,7 @@ func client(args []string) {
 	//move hostname onto headers
 	if *hostname != "" {
 		config.Headers.Set("Host", *hostname)
-		config.TLS.ServerName = *hostname
 	}
-
-	if *sni != "" {
-		config.TLS.ServerName = *sni
-	}
-
 	//ready
 	c, err := chclient.NewClient(&config)
 	if err != nil {
