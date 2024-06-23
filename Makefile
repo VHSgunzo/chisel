@@ -1,7 +1,10 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
-DIRBASE=./build
-DIR=${DIRBASE}/${VERSION}/bin
+BUILD=$(shell git rev-parse HEAD)
+DIRBUILD=./build
+# DIR=${DIRBUILD}/${VERSION}/${BUILD}/bin
+DIR=${DIRBUILD}
 
+# LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid=${BUILD} -X github.com/jpillora/chisel/share.BuildVersion=${VERSION}"
 LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid= -X github.com/jpillora/chisel/share.BuildVersion=${VERSION}"
 
 GOFILES=`go list ./...`
@@ -48,6 +51,6 @@ release: lint test
 	goreleaser release --config .github/goreleaser.yml
 
 clean:
-	rm -rf ${DIRBASE}/*
+	rm -rf ${DIRBUILD}/*
 
 .PHONY: all freebsd linux windows docker dep lint test release clean

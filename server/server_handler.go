@@ -1,6 +1,7 @@
 package chserver
 
 import (
+	"net"
 	"net/http"
 	"strings"
 	"sync/atomic"
@@ -55,6 +56,11 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		l.Debugf("Failed to upgrade (%s)", err)
 		return
+	}
+	// disable the default tcp keepalive mechanism.
+	uwsConn := wsConn.UnderlyingConn()
+	if tcpConn, ok := uwsConn.(*net.TCPConn); ok {
+		tcpConn.SetKeepAlive(false)
 	}
 	conn := cnet.NewWebSocketConn(wsConn)
 	// perform SSH handshake on net.Conn

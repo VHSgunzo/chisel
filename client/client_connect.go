@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"strings"
 	"time"
 
@@ -92,6 +93,11 @@ func (c *Client) connectionOnce(ctx context.Context) (connected bool, err error)
 	wsConn, _, err := d.DialContext(ctx, c.server, c.config.Headers)
 	if err != nil {
 		return false, err
+	}
+	// disable the default tcp keepalive mechanism.
+	uwsConn := wsConn.UnderlyingConn()
+	if tcpConn, ok := uwsConn.(*net.TCPConn); ok {
+		tcpConn.SetKeepAlive(false)
 	}
 	conn := cnet.NewWebSocketConn(wsConn)
 	// perform SSH handshake on net.Conn

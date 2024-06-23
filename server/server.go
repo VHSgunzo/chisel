@@ -19,7 +19,6 @@ import (
 	"github.com/jpillora/chisel/share/settings"
 	"github.com/jpillora/requestlog"
 	"golang.org/x/crypto/ssh"
-	// websocket "github.com/lxzan/gws"
 )
 
 // Config is the configuration for the chisel service

@@ -70,9 +70,7 @@ func NewClient(c *Config) (*Client, error) {
 		return nil, err
 	}
 	//swap to websockets scheme
-	// if !strings.HasPrefix(c.Server, "ws") {
 	u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
-	// }
 	//apply default port
 	if !regexp.MustCompile(`:\d+$`).MatchString(u.Host) {
 		u.Host = u.Host + ":2871"
