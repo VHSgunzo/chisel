@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -39,6 +40,9 @@ func (t *Tunnel) handleUDP(l *cio.Logger, rwc io.ReadWriteCloser, hostPort strin
 	for {
 		p := udpPacket{}
 		if err := h.handleWrite(&p); err != nil {
+			if strings.HasSuffix(err.Error(), "connection refused") {
+				continue
+			}
 			return err
 		}
 	}
