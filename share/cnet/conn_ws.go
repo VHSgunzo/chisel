@@ -1,6 +1,7 @@
 package cnet
 
 import (
+	"bytes"
 	"net"
 	"time"
 
@@ -9,13 +10,14 @@ import (
 
 type wsConn struct {
 	*websocket.Conn
-	buff []byte
+	buff *bytes.Buffer
 }
 
 // NewWebSocketConn converts a websocket.Conn into a net.Conn
 func NewWebSocketConn(websocketConn *websocket.Conn) net.Conn {
 	c := wsConn{
 		Conn: websocketConn,
+		buff: &bytes.Buffer{},
 	}
 	return &c
 }
@@ -26,9 +28,9 @@ func (c *wsConn) Read(dst []byte) (int, error) {
 	ldst := len(dst)
 	//use buffer or read new message
 	var src []byte
-	if len(c.buff) > 0 {
-		src = c.buff
-		c.buff = nil
+	if c.buff.Len() > 0 {
+		src = c.buff.Bytes()
+		c.buff.Reset()
 	} else if _, msg, err := c.Conn.ReadMessage(); err == nil {
 		src = msg
 	} else {
@@ -41,9 +43,7 @@ func (c *wsConn) Read(dst []byte) (int, error) {
 		n = copy(dst, src[:ldst])
 		//copy remainder into buffer
 		r := src[ldst:]
-		lr := len(r)
-		c.buff = make([]byte, lr)
-		copy(c.buff, r)
+		c.buff.Write(r)
 	} else {
 		//copy all of src into dst
 		n = copy(dst, src)
