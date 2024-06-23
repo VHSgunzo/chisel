@@ -105,7 +105,8 @@ func (u *udpListener) runInbound(ctx context.Context) error {
 			if strings.HasSuffix(err.Error(), "EOF") {
 				continue
 			}
-			return u.Errorf("inbound-udpchan: %w", err)
+			u.Errorf("inbound-udpchan: %w", err)
+			continue
 		}
 		//send over channel, including source address
 		b := buff[:n]
@@ -113,7 +114,8 @@ func (u *udpListener) runInbound(ctx context.Context) error {
 			if strings.HasSuffix(err.Error(), "EOF") {
 				continue //dropped packet...
 			}
-			return u.Errorf("encode error: %w", err)
+			u.Errorf("encode error: %w", err)
+			continue
 		}
 		//stats
 		atomic.AddInt64(&u.sent, int64(n))
@@ -129,7 +131,8 @@ func (u *udpListener) runOutbound(ctx context.Context) error {
 			if strings.HasSuffix(err.Error(), "EOF") {
 				continue
 			}
-			return u.Errorf("outbound-udpchan: %w", err)
+			u.Errorf("outbound-udpchan: %w", err)
+			continue
 		}
 		//receive from channel, including source address
 		p := udpPacket{}
@@ -137,16 +140,19 @@ func (u *udpListener) runOutbound(ctx context.Context) error {
 			//outbound ssh disconnected, get new connection...
 			continue
 		} else if err != nil {
-			return u.Errorf("decode error: %w", err)
+			u.Errorf("decode error: %w", err)
+			continue
 		}
 		//write back to inbound udp
 		addr, err := net.ResolveUDPAddr("udp", p.Src)
 		if err != nil {
-			return u.Errorf("resolve error: %w", err)
+			u.Errorf("resolve error: %w", err)
+			continue
 		}
 		n, err := u.inbound.WriteToUDP(p.Payload, addr)
 		if err != nil {
-			return u.Errorf("write error: %w", err)
+			u.Errorf("write error: %w", err)
+			continue
 		}
 		//stats
 		atomic.AddInt64(&u.recv, int64(n))
