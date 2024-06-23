@@ -380,9 +380,9 @@ func client(args []string) {
 	flags.DurationVar(&config.MaxRetryInterval, "max-retry-interval", 0, "")
 	flags.StringVar(&config.Proxy, "proxy", "", "")
 	flags.Var(&headerFlags{config.Headers}, "header", "")
+	flags.BoolVar(&config.Verbose, "v", false, "")
 	hostname := flags.String("hostname", "", "")
 	pid := flags.Bool("pid", false, "")
-	verbose := flags.Bool("v", false, "")
 	flags.Usage = func() {
 		fmt.Print(clientHelp)
 		os.Exit(0)
@@ -408,7 +408,6 @@ func client(args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.Debug = *verbose
 	if *pid {
 		generatePidFile()
 	}

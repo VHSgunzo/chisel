@@ -75,7 +75,11 @@ func (u *udpListener) run(ctx context.Context) error {
 	eg.Go(func() error {
 		return u.runOutbound(ctx)
 	})
-	if err := eg.Wait(); err != nil {
+	err := eg.Wait()
+	if uc, _ := u.getUDPChan(ctx); uc != nil {
+		_ = uc.c.Close()
+	}
+	if err != nil {
 		u.Debugf("listen: %s", err)
 		return err
 	}
@@ -179,7 +183,7 @@ func (u *udpListener) getUDPChan(ctx context.Context) (*udpChannel, error) {
 		c: rwc,
 	}
 	u.outbound = o
-	u.Debugf("aquired channel")
+	u.Debugf("acquired channel")
 	return o, nil
 }
 

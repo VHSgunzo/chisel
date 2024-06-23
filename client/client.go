@@ -88,6 +88,7 @@ func NewClient(c *Config) (*Client, error) {
 	}
 	//set default log level
 	client.Logger.Info = true
+	client.Logger.Debug = c.Verbose
 	//validate remotes
 	for _, s := range c.Remotes {
 		r, err := settings.DecodeRemote(s)

@@ -1,5 +1,5 @@
 VERSION=$(shell git describe --abbrev=0 --tags)
-BUILD=$(shell git rev-parse HEAD)
+# BUILD=$(shell git rev-parse HEAD)
 DIRBUILD=./build
 # DIR=${DIRBUILD}/${VERSION}/${BUILD}/bin
 DIR=${DIRBUILD}
