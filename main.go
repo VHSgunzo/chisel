@@ -99,7 +99,7 @@ var serverHelp = `
 
   Options:
 
-    --usock, Defines the HTTP listening unix domain socket
+    --usock, Defines a listening unix domain socket
     (defaults the environment variable CHISEL_USOCK).
 
     --host, Defines the HTTP listening host – the network interface

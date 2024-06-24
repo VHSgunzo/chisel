@@ -113,6 +113,9 @@ $ chisel server --help
 
   Options:
 
+    --usock, Defines a listening unix domain socket
+    (defaults the environment variable CHISEL_USOCK).
+
     --host, Defines the HTTP listening host – the network interface
     (defaults the environment variable HOST and falls back to 0.0.0.0).
 
@@ -196,7 +199,7 @@ $ chisel client --help
 
   Usage: chisel client [options] <server> <remote> [remote] [remote] ...
 
-  <server> is the URL to the chisel server.
+  <server> is the URL or unix domain socket to connect to the chisel server.
 
   <remote>s are remote connections tunneled through the server, each of
   which come in the form:
