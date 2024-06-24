@@ -4,12 +4,16 @@ import (
 	"net"
 )
 
-func (s *Server) listener(host, port string) (net.Listener, error) {
+func (s *Server) listener(proto, address string) (net.Listener, error) {
 	//tcp listen
-	l, err := net.Listen("tcp", host+":"+port)
+	l, err := net.Listen(proto, address)
 	if err != nil {
 		return nil, err
 	}
-	s.Infof("Listening on %s://%s:%s", "ws", host, port)
+	if proto == "unix" {
+		s.Infof("Listening on %s:%s", proto, address)
+	} else {
+		s.Infof("Listening on %s://%s", "ws", address)
+	}
 	return l, nil
 }

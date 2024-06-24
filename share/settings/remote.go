@@ -38,7 +38,7 @@ type Remote struct {
 	Socks, Reverse, Stdio               bool
 }
 
-const revPrefix = "R:"
+const revPrefix = "r:"
 
 func DecodeRemote(s string) (*Remote, error) {
 	reverse := false
@@ -188,7 +188,7 @@ func (r Remote) Encode() string {
 		remote += "/udp"
 	}
 	if r.Reverse {
-		return "R:" + local + ":" + remote
+		return "r:" + local + ":" + remote
 	}
 	return local + ":" + remote
 }
@@ -219,7 +219,7 @@ func (r Remote) Remote() string {
 // user has access to a given remote
 func (r Remote) UserAddr() string {
 	if r.Reverse {
-		return "R:" + r.LocalHost + ":" + r.LocalPort
+		return "r:" + r.LocalHost + ":" + r.LocalPort
 	}
 	return r.RemoteHost + ":" + r.RemotePort
 }

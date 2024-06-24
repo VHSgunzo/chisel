@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"runtime"
@@ -98,6 +99,9 @@ var serverHelp = `
 
   Options:
 
+    --usock, Defines the HTTP listening unix domain socket
+    (defaults the environment variable CHISEL_USOCK).
+
     --host, Defines the HTTP listening host – the network interface
     (defaults the environment variable HOST and falls back to 0.0.0.0).
 
@@ -170,6 +174,7 @@ func server(args []string) {
 	flags.BoolVar(&config.Socks5, "socks5", false, "")
 	flags.BoolVar(&config.Reverse, "reverse", false, "")
 
+	usock := flags.String("usock", "", "")
 	host := flags.String("host", "", "")
 	p := flags.String("p", "", "")
 	port := flags.String("port", "", "")
@@ -195,20 +200,32 @@ func server(args []string) {
 		log.Print("Please use `chisel server --keygen /file/path`, followed by `chisel server --keyfile /file/path` to specify the SSH private key")
 	}
 
-	if *host == "" {
-		*host = os.Getenv("HOST")
+	var proto string
+	var address string
+	if *usock == "" {
+		*usock = settings.Env("USOCK")
 	}
-	if *host == "" {
-		*host = "0.0.0.0"
-	}
-	if *port == "" {
-		*port = *p
-	}
-	if *port == "" {
-		*port = os.Getenv("PORT")
-	}
-	if *port == "" {
-		*port = "2871"
+	if *usock == "" {
+		if *host == "" {
+			*host = os.Getenv("HOST")
+		}
+		if *host == "" {
+			*host = "0.0.0.0"
+		}
+		if *port == "" {
+			*port = *p
+		}
+		if *port == "" {
+			*port = os.Getenv("PORT")
+		}
+		if *port == "" {
+			*port = "2871"
+		}
+		proto = "tcp"
+		address = *host + ":" + *port
+	} else {
+		proto = "unix"
+		address = *usock
 	}
 	if config.KeyFile == "" {
 		config.KeyFile = settings.Env("KEY_FILE")
@@ -225,7 +242,7 @@ func server(args []string) {
 	}
 	go cos.GoStats()
 	ctx := cos.InterruptContext()
-	if err := s.StartContext(ctx, *host, *port); err != nil {
+	if err := s.StartContext(ctx, proto, address); err != nil {
 		log.Fatal(err)
 	}
 	if err := s.Wait(); err != nil {
@@ -275,7 +292,7 @@ func (flag *headerFlags) Set(arg string) error {
 var clientHelp = `
   Usage: chisel client [options] <server> <remote> [remote] [remote] ...
 
-  <server> is the URL to the chisel server.
+  <server> is the URL or unix domain socket to connect to the chisel server.
 
   <remote>s are remote connections tunneled through the server, each of
   which come in the form:
@@ -393,7 +410,26 @@ func client(args []string) {
 	if len(args) < 2 {
 		log.Fatalf("A server and least one remote is required")
 	}
-	config.Server = args[0]
+	for i, str := range args {
+		args[i] = strings.ToLower(str)
+	}
+	if strings.HasPrefix(args[0], "unix:") {
+		unix_l, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			return
+		}
+		defer unix_l.Close()
+		config.Usockl = unix_l
+		config.Server = "ws://" + unix_l.Addr().String()
+		address := strings.Split(args[0], ":")
+		if len(address) == 2 && address[1] != "" {
+			config.Usock = address[1]
+		} else {
+			log.Fatalf("Incorrect unix socket format")
+		}
+	} else {
+		config.Server = args[0]
+	}
 	config.Remotes = args[1:]
 	//default auth
 	if config.Auth == "" {

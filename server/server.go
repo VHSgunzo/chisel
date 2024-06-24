@@ -152,13 +152,13 @@ func (s *Server) Run(host, port string) error {
 }
 
 // Start is responsible for kicking off the http server
-func (s *Server) Start(host, port string) error {
-	return s.StartContext(context.Background(), host, port)
+func (s *Server) Start(proto, address string) error {
+	return s.StartContext(context.Background(), proto, address)
 }
 
 // StartContext is responsible for kicking off the http server,
 // and can be closed by cancelling the provided context
-func (s *Server) StartContext(ctx context.Context, host, port string) error {
+func (s *Server) StartContext(ctx context.Context, proto, address string) error {
 	s.Infof("Fingerprint %s", s.fingerprint)
 	if s.users.Len() > 0 {
 		s.Infof("User authentication enabled")
@@ -166,7 +166,7 @@ func (s *Server) StartContext(ctx context.Context, host, port string) error {
 	if s.reverseProxy != nil {
 		s.Infof("Reverse proxy enabled")
 	}
-	l, err := s.listener(host, port)
+	l, err := s.listener(proto, address)
 	if err != nil {
 		return err
 	}

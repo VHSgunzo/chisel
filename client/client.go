@@ -34,6 +34,8 @@ type Config struct {
 	MaxRetryCount    int
 	MaxRetryInterval time.Duration
 	Server           string
+	Usock            string
+	Usockl           net.Listener
 	Proxy            string
 	Remotes          []string
 	Headers          http.Header
@@ -49,6 +51,8 @@ type Client struct {
 	sshConfig *ssh.ClientConfig
 	proxyURL  *url.URL
 	server    string
+	usock     string
+	usockl    net.Listener
 	connCount cnet.ConnCount
 	stop      func()
 	eg        *errgroup.Group
@@ -85,6 +89,8 @@ func NewClient(c *Config) (*Client, error) {
 			Version: chshare.BuildVersion,
 		},
 		server: u.String(),
+		usock:  c.Usock,
+		usockl: c.Usockl,
 	}
 	//set default log level
 	client.Logger.Info = true
@@ -196,7 +202,11 @@ func (c *Client) Start(ctx context.Context) error {
 	if c.proxyURL != nil {
 		via = " via " + c.proxyURL.String()
 	}
-	c.Infof("Connecting to %s%s\n", c.server, via)
+	if c.usock != "" {
+		c.Infof("Connecting to unix:%s\n", c.usock)
+	} else {
+		c.Infof("Connecting to %s%s\n", c.server, via)
+	}
 	//connect to chisel server
 	eg.Go(func() error {
 		return c.connectionLoop(ctx)

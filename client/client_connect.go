@@ -90,6 +90,22 @@ func (c *Client) connectionOnce(ctx context.Context) (connected bool, err error)
 			return false, err
 		}
 	}
+	if c.usock != "" {
+		unix_conn, err := net.Dial("unix", c.usock)
+		if err != nil {
+			return false, err
+		}
+		defer unix_conn.Close()
+		go func() {
+			conn_l, err := c.usockl.Accept()
+			if err != nil {
+				return
+			}
+			defer conn_l.Close()
+			go io.Copy(conn_l, unix_conn)
+			io.Copy(unix_conn, conn_l)
+		}()
+	}
 	wsConn, _, err := d.DialContext(ctx, c.server, c.config.Headers)
 	if err != nil {
 		return false, err
