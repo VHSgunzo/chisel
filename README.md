@@ -1,6 +1,6 @@
 # Chisel
 
-[![GoDoc](https://godoc.org/github.com/jpillora/chisel?status.svg)](https://godoc.org/github.com/jpillora/chisel) [![CI](https://github.com/jpillora/chisel/workflows/CI/badge.svg)](https://github.com/jpillora/chisel/actions?workflow=CI)
+[![GoDoc](https://godoc.org/github.com/VHSgunzo/chisel?status.svg)](https://godoc.org/github.com/VHSgunzo/chisel) [![CI](https://github.com/VHSgunzo/chisel/workflows/CI/badge.svg)](https://github.com/VHSgunzo/chisel/actions?workflow=CI)
 
 Chisel is a fast TCP/UDP tunnel, transported over HTTP, secured via SSH. Single executable including both client and server. Written in Go (golang). Chisel is mainly useful for passing through firewalls, though it can also be used to provide a secure endpoint into your network.
 
@@ -35,9 +35,9 @@ Chisel is a fast TCP/UDP tunnel, transported over HTTP, secured via SSH. Single 
 
 ### Binaries
 
-[![Releases](https://img.shields.io/github/release/jpillora/chisel.svg)](https://github.com/jpillora/chisel/releases) [![Releases](https://img.shields.io/github/downloads/jpillora/chisel/total.svg)](https://github.com/jpillora/chisel/releases)
+[![Releases](https://img.shields.io/github/release/jpillora/chisel.svg)](https://github.com/VHSgunzo/chisel/releases) [![Releases](https://img.shields.io/github/downloads/jpillora/chisel/total.svg)](https://github.com/VHSgunzo/chisel/releases)
 
-See [the latest release](https://github.com/jpillora/chisel/releases/latest) or download and install it now with `curl https://i.jpillora.com/chisel! | bash`
+See [the latest release](https://github.com/VHSgunzo/chisel/releases/latest) or download and install it now with `curl https://i.jpillora.com/chisel! | bash`
 
 ### Docker
 
@@ -58,7 +58,7 @@ sudo dnf -y install chisel
 ### Source
 
 ```sh
-$ go install github.com/jpillora/chisel@latest
+$ go install github.com/VHSgunzo/chisel@latest
 ```
 
 ## Demo
@@ -83,7 +83,7 @@ and then visit [localhost:3000](http://localhost:3000/), we should see a directo
 ## Usage
 
 <!-- render these help texts by hand,
-  or use https://github.com/jpillora/md-tmpl
+  or use https://github.com/VHSgunzo/md-tmpl
     with $ md-tmpl -w README.md -->
 
 <!--tmpl,code=plain:echo "$ chisel --help" && go run main.go --help | sed 's#0.0.0-src (go1\..*)#X.Y.Z#' -->
@@ -99,7 +99,7 @@ $ chisel --help
     client - runs chisel in client mode
 
   Read more:
-    https://github.com/jpillora/chisel
+    https://github.com/VHSgunzo/chisel
 
 ```
 <!--/tmpl-->
@@ -187,7 +187,7 @@ $ chisel server --help
     X.Y.Z
 
   Read more:
-    https://github.com/jpillora/chisel
+    https://github.com/VHSgunzo/chisel
 
 ```
 <!--/tmpl-->
@@ -308,7 +308,7 @@ $ chisel client --help
     X.Y.Z
 
   Read more:
-    https://github.com/jpillora/chisel
+    https://github.com/VHSgunzo/chisel
 
 ```
 <!--/tmpl-->
@@ -367,9 +367,9 @@ Since WebSockets support is required:
 
 - http://golang.org/doc/code.html
 - http://golang.org/doc/effective_go.html
-- `github.com/jpillora/chisel/share` contains the shared package
-- `github.com/jpillora/chisel/server` contains the server package
-- `github.com/jpillora/chisel/client` contains the client package
+- `github.com/VHSgunzo/chisel/share` contains the shared package
+- `github.com/VHSgunzo/chisel/server` contains the server package
+- `github.com/VHSgunzo/chisel/client` contains the client package
 
 ## Changelog
 
@@ -386,4 +386,4 @@ Since WebSockets support is required:
 
 ## License
 
-[MIT](https://github.com/jpillora/chisel/blob/master/LICENSE) © Jaime Pillora
+[MIT](https://github.com/VHSgunzo/chisel/blob/master/LICENSE) © Jaime Pillora

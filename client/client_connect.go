@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
+	chshare "github.com/VHSgunzo/chisel/share"
+	"github.com/VHSgunzo/chisel/share/cnet"
+	"github.com/VHSgunzo/chisel/share/cos"
+	"github.com/VHSgunzo/chisel/share/settings"
 	"github.com/gorilla/websocket"
 	"github.com/jpillora/backoff"
-	chshare "github.com/jpillora/chisel/share"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/cos"
-	"github.com/jpillora/chisel/share/settings"
 	"golang.org/x/crypto/ssh"
 )
 

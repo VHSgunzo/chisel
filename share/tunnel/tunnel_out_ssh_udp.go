@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jpillora/chisel/share/cio"
-	"github.com/jpillora/chisel/share/settings"
+	"github.com/VHSgunzo/chisel/share/cio"
+	"github.com/VHSgunzo/chisel/share/settings"
 	"github.com/meteorite/scope"
 	"golang.org/x/sync/errgroup"
 )

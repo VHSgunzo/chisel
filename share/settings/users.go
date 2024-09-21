@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/VHSgunzo/chisel/share/cio"
 	"github.com/fsnotify/fsnotify"
-	"github.com/jpillora/chisel/share/cio"
 )
 
 type Users struct {

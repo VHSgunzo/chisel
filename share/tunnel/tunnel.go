@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jpillora/chisel/share/cio"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/settings"
+	"github.com/VHSgunzo/chisel/share/cio"
+	"github.com/VHSgunzo/chisel/share/cnet"
+	"github.com/VHSgunzo/chisel/share/settings"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 )

@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	chclient "github.com/jpillora/chisel/client"
-	chserver "github.com/jpillora/chisel/server"
-	chshare "github.com/jpillora/chisel/share"
-	"github.com/jpillora/chisel/share/ccrypto"
-	"github.com/jpillora/chisel/share/cos"
-	"github.com/jpillora/chisel/share/settings"
+	chclient "github.com/VHSgunzo/chisel/client"
+	chserver "github.com/VHSgunzo/chisel/server"
+	chshare "github.com/VHSgunzo/chisel/share"
+	"github.com/VHSgunzo/chisel/share/ccrypto"
+	"github.com/VHSgunzo/chisel/share/cos"
+	"github.com/VHSgunzo/chisel/share/settings"
 )
 
 var help = `
@@ -30,12 +30,11 @@ var help = `
     client - runs chisel in client mode
 
   Read more:
-    https://github.com/jpillora/chisel
+    https://github.com/VHSgunzo/chisel
 
 `
 
 func main() {
-
 	version := flag.Bool("version", false, "")
 	v := flag.Bool("v", false, "")
 	flag.Bool("help", false, "")
@@ -83,7 +82,7 @@ var commonHelp = `
     ` + chshare.BuildVersion + ` (` + runtime.Version() + `)
 
   Read more:
-    https://github.com/jpillora/chisel
+    https://github.com/VHSgunzo/chisel
 
 `
 
@@ -342,7 +341,7 @@ var clientHelp = `
     client's internal SOCKS5 proxy.
 
     When stdio is used as local-host, the tunnel will connect standard
-    input/output of this program with the remote. This is useful when 
+    input/output of this program with the remote. This is useful when
     combined with ssh ProxyCommand. You can use
       ssh -o ProxyCommand='chisel client chiselserver stdio:%h:%p' \
           user@example.com

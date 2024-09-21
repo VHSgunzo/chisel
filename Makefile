@@ -4,8 +4,8 @@ DIRBUILD=./build
 # DIR=${DIRBUILD}/${VERSION}/${BUILD}/bin
 DIR=${DIRBUILD}
 
-# LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid=${BUILD} -X github.com/jpillora/chisel/share.BuildVersion=${VERSION}"
-LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid= -X github.com/jpillora/chisel/share.BuildVersion=${VERSION}"
+# LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid=${BUILD} -X github.com/VHSgunzo/chisel/share.BuildVersion=${VERSION}"
+LDFLAGS=-ldflags "-s -w ${XBUILD} -buildid= -X github.com/VHSgunzo/chisel/share.BuildVersion=${VERSION}"
 
 GOFILES=`go list ./...`
 GOFILESNOTEST=`go list ./... | grep -v test`
